@@ -9,10 +9,10 @@
 #
 #
 #  host PCM_P -- B3 --> eq iir --> B4 --> Codec Adapter --> B0 --> smart_amp -- B1--> sink DAI0
-#							   ^
-#							   |
-#							   B2
-#							   |
+#							                             ^
+#							                             |
+#							                             B2
+#							                             |
 
 # Include topology builder
 include(`utils.m4')
@@ -161,8 +161,8 @@ define(`N_SMART_REF_BUF',`BUF'PIPELINE_ID`.'2)
 # Pipeline Graph
 #
 #  host PCM_P --B3--> EQ_IIR 0 --> B4 --> Codec Adapter --> B0--> smart_amp --B1--> sink DAI0
-#								^
-#								|--B2--
+#								                            ^
+#								                            |--B2--
 
 P_GRAPH(pipe-smart-amplifier-playback, PIPELINE_ID,
 	LIST(`		',
