@@ -54,11 +54,11 @@
 
 /* Mailbox configuration */
 #define SRAM_OUTBOX_BASE		0x22050000
-#define SRAM_OUTBOX_SIZE		0x200
+#define SRAM_OUTBOX_SIZE		0x400
 #define SRAM_OUTBOX_OFFSET		0
 
 #define SRAM_INBOX_BASE			(SRAM_OUTBOX_BASE + SRAM_OUTBOX_SIZE)
-#define SRAM_INBOX_SIZE			0x200
+#define SRAM_INBOX_SIZE			0x400
 #define SRAM_INBOX_OFFSET		SRAM_OUTBOX_SIZE
 
 #define SRAM_DEBUG_BASE			(SRAM_INBOX_BASE + SRAM_INBOX_SIZE)
@@ -89,7 +89,7 @@
 #define HEAP_RT_COUNT256	32
 #define HEAP_RT_COUNT512	4
 #define HEAP_RT_COUNT1024	12
-#define HEAP_RT_COUNT2048	12
+#define HEAP_RT_COUNT2048	48
 
 /* Heap section sizes for system runtime heap */
 #define HEAP_SYS_RT_COUNT64	64
