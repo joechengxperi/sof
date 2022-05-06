@@ -207,7 +207,6 @@ static int acp_dai_sp_dma_set_config(struct dma_chan_data *channel,
 	channel->is_scheduling_source = true;
 	channel->direction = config->direction;
 	sp_buff_size = config->elem_array.elems[0].size * config->elem_array.count;
-
 	if (config->direction ==  DMA_DIR_MEM_TO_DEV) {
 
 		/* SP Transmit FIFO Address and FIFO Size*/
@@ -320,6 +319,9 @@ static int acp_dai_sp_dma_get_data_size(struct dma_chan_data *channel,
 		*free = (curr_tx_pos - prev_tx_pos) > sp_buff_size ? (curr_tx_pos - prev_tx_pos) % sp_buff_size : curr_tx_pos - prev_tx_pos;
 		*avail = sp_buff_size - *free;
 		prev_tx_pos = curr_tx_pos;
+		tr_info(&acp_sp_tr, "SP data size Avail %d, Free %d", *avail, *free);
+		*avail = sp_buff_size/2;
+		*free  = sp_buff_size/2;
 	} else if (channel->direction == DMA_DIR_DEV_TO_MEM) {
 		rx_low = (uint32_t)io_reg_read(PU_REGISTER_BASE +
 				ACP_I2S_RX_LINEARPOSITIONCNTR_LOW);

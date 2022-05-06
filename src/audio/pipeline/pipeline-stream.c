@@ -126,6 +126,8 @@ int pipeline_copy(struct pipeline *p)
 	uint32_t dir;
 	int ret;
 
+	pipe_info(p, "pipeline_copy():");
+
 	if (p->source_comp->direction == SOF_IPC_STREAM_PLAYBACK) {
 		dir = PPL_DIR_UPSTREAM;
 		start = p->sink_comp;

@@ -374,6 +374,7 @@ static void host_update_position(struct comp_dev *dev, uint32_t bytes)
 	}
 
 	if (update_mailbox) {
+		comp_info(dev, "host_update_position()hd->local_pos %d", hd->local_pos);
 		pipeline_get_timestamp(dev->pipeline, dev, &hd->posn);
 		mailbox_stream_write(dev->pipeline->posn_offset,
 				     &hd->posn, sizeof(hd->posn));
