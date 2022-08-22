@@ -361,7 +361,7 @@ int module_adapter_params(struct comp_dev *dev, struct sof_ipc_stream_params *pa
 	}
 
 	mod->period_bytes = params->sample_container_bytes *
-			   params->channels * params->rate / 1000;
+			   params->channels * (params->rate * dev->period / 1000000);
 	return 0;
 }
 
