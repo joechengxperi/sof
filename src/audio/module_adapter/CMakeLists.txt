@@ -72,5 +72,9 @@ if(NOT CONFIG_LIBRARY)
 	sof_add_static_library(DtsCodec ${CMAKE_CURRENT_LIST_DIR}/lib/release/libdts-sof-interface-i32.a)
 	endif()
 
+	if(CONFIG_VALIDATION_CODEC)
+	add_local_sources(sof module/validation.c)
+	endif()
+
 	return()
 endif()
