@@ -17,6 +17,8 @@ usage: $0 [-f] [-p <platform>]
        -p Build testbench binary for xt-run for selected platform, e.g. -p tgl
        -f Build testbench with compiler provided by fuzzer
           (default path: $HOME/sof/work/AFL/afl-gcc)
+       -j number of parallel make/ninja jobs. Defaults to /usr/bin/nproc.
+          You MUST re-run with -j1 when something is failing!
 EOFUSAGE
 }
 
@@ -40,7 +42,7 @@ rebuild_testbench()
 
     cmake -DCMAKE_INSTALL_PREFIX=install  ..
 
-    cmake --build .  --  -j"$(nproc)" $BUILD_TARGET
+    cmake --build .  --  -j"${jobs}" $BUILD_TARGET
 }
 
 export_CC_with_afl()
@@ -59,6 +61,9 @@ setup_xtensa_tools_build()
     test -n "${XTENSA_TOOLS_ROOT}" || die "XTENSA_TOOLS_ROOT need to be set.\n"
 
     # Get compiler version for platform
+
+    # 'shellcheck -x ...' works only from the top directory
+    # shellcheck source=scripts/set_xtensa_params.sh
     source "$SCRIPT_DIR/set_xtensa_params.sh" "$BUILD_PLATFORM"
 
     test -n "${XTENSA_TOOLS_VERSION}" ||
@@ -107,6 +112,8 @@ source $export_script
 \$XTENSA_PATH/xt-run $xtbench -h
 
 EOFUSAGE
+            ;;
+        *) >&2 printf 'testbench_usage: unknown/missing BUILD_TYPE=%s\n' "$BUILD_TYPE" ;;
     esac
 }
 
@@ -117,13 +124,15 @@ main()
     BUILD_TESTBENCH_DIR="$SOF_REPO"/tools/testbench
     : "${SOF_AFL:=$HOME/sof/work/AFL/afl-gcc}"
 
-    while getopts "fhp:" OPTION; do
+    jobs=$(nproc)
+    while getopts "fhj:p:" OPTION; do
         case "$OPTION" in
             p)
                 BUILD_PLATFORM="$OPTARG"
                 setup_xtensa_tools_build
                 ;;
             f) export_CC_with_afl;;
+            j) jobs=$(printf '%d' "$OPTARG") ;;
             h) print_usage; exit 1;;
             *) print_usage; exit 1;;
         esac
