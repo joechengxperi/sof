@@ -749,6 +749,10 @@ zephyr_library_sources_ifdef(CONFIG_DTS_CODEC_STUB
 	${SOF_AUDIO_PATH}/module_adapter/module/dts/dts_stub.c
 )
 
+if (CONFIG_DTS_CODEC)
+zephyr_library_import(DtsCodec ${SOF_AUDIO_PATH}/module_adapter/lib/release/libdts-sof-interface-i32.a)
+endif()
+
 zephyr_library_sources_ifdef(CONFIG_WAVES_CODEC
 	${SOF_AUDIO_PATH}/module_adapter/module/waves/waves.c
 )
