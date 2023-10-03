@@ -73,6 +73,76 @@ static int dts_effect_convert_sof_interface_result(struct comp_dev *dev,
 	return ret;
 }
 
+#if CONFIG_IPC_MAJOR_4
+static void base_module_cfg_to_stream_params(const struct ipc4_base_module_cfg *base_cfg,
+                         struct sof_ipc_stream_params *params)
+{
+    enum sof_ipc_frame __sparse_cache frame_fmt, valid_fmt;
+    int i;
+
+    memset(params, 0, sizeof(struct sof_ipc_stream_params));
+    params->channels = base_cfg->audio_fmt.channels_count;
+    params->rate = base_cfg->audio_fmt.sampling_frequency;
+    params->sample_container_bytes = base_cfg->audio_fmt.depth / 8;
+    params->sample_valid_bytes = base_cfg->audio_fmt.valid_bit_depth / 8;
+    params->buffer_fmt = base_cfg->audio_fmt.interleaving_style;
+    params->buffer.size = base_cfg->obs * 2;
+
+    audio_stream_fmt_conversion(base_cfg->audio_fmt.depth,
+                    base_cfg->audio_fmt.valid_bit_depth,
+                    &frame_fmt, &valid_fmt,
+                    base_cfg->audio_fmt.s_type);
+    params->frame_fmt = frame_fmt;
+
+    for (i = 0; i < SOF_IPC_MAX_CHANNELS; i++)
+        params->chmap[i] = (base_cfg->audio_fmt.ch_map >> i * 4) & 0xf;
+}
+
+static int dts_params(struct processing_module *mod)
+{
+    struct sof_ipc_stream_params *params = mod->stream_params;
+    struct comp_buffer *sink;
+    struct comp_buffer __sparse_cache *sink_c;
+    struct comp_dev *dev = mod->dev;
+    enum sof_ipc_frame __sparse_cache dummy;
+    uint32_t sink_period_bytes, sink_stream_size;
+    int ret;
+
+    comp_dbg(dev, "dts_params()");
+
+    base_module_cfg_to_stream_params(&mod->priv.cfg.base_cfg, params);
+
+    ret = comp_verify_params(dev, 0, params);
+    if (ret < 0) {
+        comp_err(dev, "dts_params(): comp_verify_params() failed!");
+        return -EINVAL;
+    }
+
+    sink = list_first_item(&dev->bsink_list, struct comp_buffer, source_list);
+    sink_c = buffer_acquire(sink);
+
+    sink_stream_size = sink_c->stream.size;
+
+    /* calculate period size based on config */
+    sink_period_bytes = audio_stream_period_bytes(&sink_c->stream,
+                              dev->frames);
+    buffer_release(sink_c);
+
+    if (sink_period_bytes == 0) {
+        comp_err(dev, "dts_params(): period_bytes = 0");
+        return -EINVAL;
+    }
+
+    if (sink_stream_size < sink_period_bytes) {
+        comp_err(dev, "dts_params(): sink buffer size %d is insufficient < %d",
+             sink_stream_size, sink_period_bytes);
+        return -ENOMEM;
+    }
+
+    return 0;
+}
+#endif
+
 static int dts_effect_populate_buffer_configuration(struct comp_dev *dev,
 	DtsSofInterfaceBufferConfiguration *buffer_config)
 {
@@ -189,6 +259,14 @@ static int dts_codec_prepare(struct processing_module *mod,
 	DtsSofInterfaceResult dts_result;
 
 	comp_dbg(dev, "dts_codec_prepare() start");
+
+#if CONFIG_IPC_MAJOR_4
+	ret = dts_params(mod);
+	if (ret < 0) {
+		comp_err(dev, "dts_codec_prepare() set parameter error %d", ret);
+		return ret;
+	}
+#endif
 
 	ret = dts_effect_populate_buffer_configuration(dev, &buffer_configuration);
 	if (ret) {

@@ -169,7 +169,8 @@ check_optimization(fma -mfma -ftree-vectorize -DOPS_FMA)
 check_optimization(hifi2ep -mhifi2ep "" -DOPS_HIFI2EP)
 check_optimization(hifi3 -mhifi3 "" -DOPS_HIFI3)
 
-set(sof_audio_modules mixer volume src asrc eq-fir eq-iir dcblock crossover tdfb drc multiband_drc mfcc mux)
+set(sof_audio_modules mixer volume src asrc eq-fir eq-iir dcblock crossover
+    tdfb drc multiband_drc mfcc mux dts)
 
 # sources for each module
 if(CONFIG_IPC_MAJOR_3)
@@ -190,6 +191,7 @@ set(drc_sources drc/drc.c drc/drc_generic.c drc/drc_math_generic.c)
 set(multiband_drc_sources multiband_drc/multiband_drc_generic.c crossover/crossover.c crossover/crossover_generic.c drc/drc.c drc/drc_generic.c drc/drc_math_generic.c multiband_drc/multiband_drc.c )
 set(mfcc_sources mfcc/mfcc.c mfcc/mfcc_setup.c mfcc/mfcc_common.c mfcc/mfcc_generic.c mfcc/mfcc_hifi4.c mfcc/mfcc_hifi3.c)
 set(mux_sources mux/mux.c mux/mux_generic.c)
+set(dts_sources module_adapter/module/dts/dts.c)
 
 foreach(audio_module ${sof_audio_modules})
 	# first compile with no optimizations
