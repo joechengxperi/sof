@@ -416,13 +416,23 @@ dts_codec_set_configuration(struct processing_module *mod, uint32_t config_id,
 
 	ret = module_set_configuration(mod, config_id, pos, data_offset_size, fragment,
 				       fragment_size, response, response_size);
-	if (ret < 0)
+	if (ret < 0) {
+		comp_err(dev, "dts_codec_set_configuration(): error %x from module_set_configuration()",
+			 ret);
 		return ret;
+	}
 
-	/* return if more fragments are expected or if the module is not prepared */
-	if ((pos != MODULE_CFG_FRAGMENT_LAST && pos != MODULE_CFG_FRAGMENT_SINGLE) ||
-	    md->state < MODULE_INITIALIZED)
+	/* return if more fragments are expected */
+	if (pos != MODULE_CFG_FRAGMENT_LAST && pos != MODULE_CFG_FRAGMENT_SINGLE) {
+		comp_err(dev, "dts_codec_set_configuration(): pos %d error", pos);
 		return 0;
+	}
+
+	// return if the module is not prepared
+	if (md->state < MODULE_INITIALIZED) {
+		comp_err(dev, "dts_codec_set_configuration(): state %d error", md->state);
+		return 0;
+	}
 
 	/* whole configuration received, apply it now */
 	ret = dts_codec_apply_config(mod);
