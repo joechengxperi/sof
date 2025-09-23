@@ -7,7 +7,7 @@ if(zephyr) ###  Zephyr ###
     add_subdirectory(dts/llext ${PROJECT_BINARY_DIR}/dts_llext)
     add_dependencies(app dts)
 
-  elseif(CONFIG_DTS_CODEC STREQUAL "y")  
+  elseif(CONFIG_DTS_CODEC)  
     zephyr_library_sources(dts/dts.c)
     if (CONFIG_DTS_CODEC_STUB)
       zephyr_library_sources(dts/dts_stub.c)
@@ -15,7 +15,6 @@ if(zephyr) ###  Zephyr ###
       zephyr_library_import(DtsCodec
         ${sof_top_dir}/third_party/lib/libdts-sof-interface-i32.a)
     endif()
-  #else()
   endif()
 
   return()
