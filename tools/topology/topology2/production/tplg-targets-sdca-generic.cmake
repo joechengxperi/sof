@@ -14,6 +14,13 @@ SDW_JACK_IN_STREAM=Capture-SimpleJack,NUM_HDMIS=0"
 "cavs-sdw\;sof-sdca-1amp-id2\;NUM_SDW_AMP_LINKS=1,SDW_JACK=false,\
 SDW_AMP_FEEDBACK=false,SDW_SPK_STREAM=Playback-SmartAmp,NUM_HDMIS=0"
 
+# DTS
+"cavs-sdw\;sof-sdca-jack-id0-dts\;SDW_JACK_OUT_STREAM=Playback-SimpleJack,\
+SDW_JACK_IN_STREAM=Capture-SimpleJack,NUM_HDMIS=0,USE_DTS=true"
+
+"cavs-sdw\;sof-sdca-1amp-id0-dts\;NUM_SDW_AMP_LINKS=1,SDW_JACK=false,\
+SDW_AMP_FEEDBACK=false,SDW_SPK_STREAM=Playback-SmartAmp,NUM_HDMIS=0,USE_DTS=true"
+
 "cavs-sdw\;sof-sdca-2amp-id2\;NUM_SDW_AMP_LINKS=2,SDW_JACK=false,\
 SDW_AMP_FEEDBACK=false,SDW_SPK_STREAM=Playback-SmartAmp,NUM_HDMIS=0"
 
